@@ -41,7 +41,9 @@ void serial_putchar(char c)
 char serial_getchar()
 {
     while (1) {
-        busy_wait_ms(10);
+        // Use sleep_ms instead of busy_wait_ms to allow USB interrupts
+        sleep_ms(10);
+        tud_task(); // Process TinyUSB tasks
         if (tud_cdc_connected()) {
             if (tud_cdc_available())
 	            return tud_cdc_read_char();

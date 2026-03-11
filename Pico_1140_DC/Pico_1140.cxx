@@ -6,6 +6,7 @@
 #include "f_util.h"
 #include "ff.h"
 #include "pico/stdlib.h"
+#include "hardware/clocks.h"
 #include "rtc.h"
 #include "string.h"
 #include <string>

@@ -42,10 +42,10 @@ void spi_dma_isr();
 // selects.
 static spi_t spis[] = { // One for each SPI.
 {
-	.hw_inst = spi1, // SPI component
-	.miso_gpio = 12, // GPIO number (not pin number)
-	.mosi_gpio = 15,
-	.sck_gpio = 14,
+	.hw_inst = spi0, // SPI component - Waveshare RP2040-PiZero uses SPI0
+	.miso_gpio = 20, // GPIO number (not pin number) - Waveshare RP2040-PiZero
+	.mosi_gpio = 19, // Waveshare RP2040-PiZero
+	.sck_gpio = 18,  // Waveshare RP2040-PiZero
 
 	/* The choice of SD card matters! SanDisk runs at the highest speed. PNY
 	   can only mangage 5 MHz. Those are all I've tried. */
@@ -64,7 +64,7 @@ static sd_card_t sd_cards[] = { // One for each SD card
 {
 	.pcName = "0:", // Name used to mount device
 	.spi = &spis[0], // Pointer to the SPI driving this card
-	.ss_gpio = 9, // The SPI slave select GPIO for this SD card
+	.ss_gpio = 21, // The SPI slave select GPIO for this SD card - Waveshare RP2040-PiZero
 	//.use_card_detect = false,
 	.m_Status = STA_NOINIT
 }

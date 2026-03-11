@@ -11,6 +11,7 @@
 #include "avr11.h"
 #include "kb11.h"
 #include "pico/stdlib.h"
+#include "tusb.h"
 
 KB11 cpu;
 int kbdelay = 0;
@@ -105,7 +106,7 @@ uint16_t binload(char* fnm)
 void setup( char *rkfile, char *rlfile, int bootdev)
  {
 
-    if (strstr(rkfile,"maindec")) {
+    if (rkfile[0] != '\0' && strstr(rkfile,"maindec")) {
         cpu.reset(0200,0);
         //cpu.print=true;           // Uncomment to start continuous print of cpu steps
         if (binload(rkfile))
@@ -116,21 +117,25 @@ void setup( char *rkfile, char *rlfile, int bootdev)
     }
 	if (cpu.unibus.rk11.rk05.obj.lockid)
 		return;
-	FRESULT fr = f_open(&cpu.unibus.rl11.rl02,rlfile, FA_READ | FA_WRITE);
-	if (FR_OK != fr && FR_EXIST != fr) {
-		printf("f_open(%s) error: %s (%d)\n", rlfile, FRESULT_str(fr), fr);
-		while (1) ;
+	FRESULT fr;
+	if (rlfile[0] != '\0') {
+		fr = f_open(&cpu.unibus.rl11.rl02,rlfile, FA_READ | FA_WRITE);
+		if (FR_OK != fr && FR_EXIST != fr) {
+			printf("f_open(%s) error: %s (%d)\n", rlfile, FRESULT_str(fr), fr);
+			while (1) ;
+		}
 	}
-    fr = f_open(&cpu.unibus.rk11.rk05, rkfile, FA_READ | FA_WRITE);
-	if (FR_OK != fr && FR_EXIST != fr) {
-		printf("f_open(%s) error: %s (%d)\n", rkfile, FRESULT_str(fr), fr);
-		while (1) ;
+	if (rkfile[0] != '\0') {
+		fr = f_open(&cpu.unibus.rk11.rk05, rkfile, FA_READ | FA_WRITE);
+		if (FR_OK != fr && FR_EXIST != fr) {
+			printf("f_open(%s) error: %s (%d)\n", rkfile, FRESULT_str(fr), fr);
+			while (1) ;
+		}
 	}
     clkdiv = (uint64_t)1000000 / (uint64_t)60;
     systime = time_us_64();
 	cpu.reset(02002,bootdev);
     printf("Ready\n");
-    
 }
 
 jmp_buf trapbuf;
@@ -149,21 +154,31 @@ void loop() {
 }
 
 void loop0() {
+    static uint32_t stepcnt = 0;
+
     while (true) {
+        stepcnt++;
+
         if ((cpu.itab[0].vec > 0) && (cpu.itab[0].pri > cpu.priority())) {
             cpu.trapat(cpu.itab[0].vec);
             cpu.popirq();
             return; // exit from loop to reset trapbuf
         }
+
         if (!cpu.wtstate)
            cpu.step();
+
         cpu.unibus.rk11.step();
         cpu.unibus.rl11.step();
-        if (kbdelay++ == 2000) {
+
+        if (kbdelay++ == 50000) {  // Poll less frequently to avoid blocking
+            tud_task();  // CRITICAL: Process USB BEFORE polling
             cpu.unibus.cons.poll();
-            cpu.unibus.dl11.poll();
+            // Note: dl11.poll() causes blocking - leave disabled
+            // cpu.unibus.dl11.poll();
             kbdelay = 0;
         }
+
         nowtime = time_us_64();
         if (nowtime-systime > clkdiv) {
             cpu.unibus.kw11.tick();
