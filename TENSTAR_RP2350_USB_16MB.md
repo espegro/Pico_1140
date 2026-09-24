@@ -5,6 +5,10 @@ TENSTAR RP2350-USB 16 MB board using the electrically compatible
 `waveshare_rp2350_plus_16mb` Pico SDK profile, and bundles `Unix_V6.RK05` in
 the UF2 image.
 
+For a quick test, copy `Pico_1140_RP2350_USB/images/Pico_1140_RP2350_16MB.uf2`
+to the board in BOOTSEL mode. The original SimH-compatible disk image is also
+included separately as `Pico_1140_RP2350_USB/images/Unix_V6.RK05`.
+
 ## Flash layout
 
 | Flash offset | Size | Use |
