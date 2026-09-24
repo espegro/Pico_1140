@@ -1,0 +1,8 @@
+    .section .disk_image, "a", %progbits
+    .balign 4096
+    .global embedded_disk_start
+    .global embedded_disk_end
+embedded_disk_start:
+    .incbin "@DISK_IMAGE_PATH@"
+embedded_disk_end:
+    .balign 4096

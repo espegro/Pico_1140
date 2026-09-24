@@ -1,6 +1,14 @@
 # Pico_1140
 A PDP11/40 emulator that will run Unix v5/v6 and a number of DEC operating systems.
 
+## Hardware variants
+
+- `Pico_1140_DC` is the original RP2040 build using disk images on an SD card.
+- `Pico_1140_RP2350_USB` targets the TENSTAR RP2350-USB 16 MB board. It embeds
+  Unix V6 in internal flash, uses a power-safe copy-on-write flash journal, and
+  drives the onboard WS2812 status LED on GPIO 22. See
+  [TENSTAR_RP2350_USB_16MB.md](TENSTAR_RP2350_USB_16MB.md).
+
 Introduction and acknowledgements:
 
 This is an updated version of Dave Cheney's CPP11 https://github.com/davecheney/cpp11 which will run on a Pi Pico.
@@ -37,7 +45,7 @@ The images are in the same format as used by Simh and may be built or modified i
 Booting:
 
 After inserting an SDCard and resetting the card, a COM port will appear. Connect a terminal app to this eg TeraTerm. The images on the SDCard
-will be listed with an index that is used to select the boot volume. 
+will be listed with an index that is used to select the boot volume.
 The system boots using a boot rom in bootrom.h at address 2000. The start address is set in setup(..) in avr11.cxx.
 At present, only 1 volume can be attached at a time. Typically, unix images prompt with a '@', then type unix or rkunix to boot.
 The switchregister is set by default to 0173030 in KB11::reset which will boot unix in single user mode.
@@ -90,13 +98,13 @@ Update Jan 2023
  3. Minor changes to other handlers to allow for the below.<br>
  4. Added a suitable minimal RSTS/E image which is built to use the FIS instruction set.<br>
  5. Added a suitable minimal Multi-User BASIC image.<br>
- 
+
  It has turned out to be quite complex to allow for the function of UNIX/RT11/RSTS/MUBAS as they all have some interesting differences.<br>
  Due to the changes, it remains possible that something will have broken.<br>
  Any comments welcome.
-  
+
  Ian Schofield Jan 2023
-  
+
  Update Jan 2023<BR>
  This is a major update with many minor change. The most important point is that the app has now gone multi-user!<br>
  I have added and extra DL11 interface. If you use a **SparkFun board**, upload the .uf2 in the images directory.<br>
@@ -117,7 +125,7 @@ Update Jan 2023
  appearing and it was believed that Fortran was not the language of the future. As it happens, I am a Basic fan and I still use VB.Net for
  a number of projects. But c was in the pipeline and one of the RT11 disc contains DECUS c. The rest as they say is history but I have to say
  that I am not keen on Rust etc.!<BR>
- 
+
  Ian Schofield Jan 2023<br>
  <br>
  Update Mar 2023.<br>
@@ -125,7 +133,7 @@ Update Jan 2023
  Many thanks to Bruno Novak for his work on sysgening various versions of RSX11M to include Cobol, Fortran and Basic Plus 2. It became apparent that there was a significant problem with the emuation. I have traced this to the original use of 16bit IOPAGE addresses used to reference the major registers. These references did not use a valid address and bypassed the KT11 memory mapping system. This has been corrected and the details are in KB11.CXX. All of the above compilers and runtimes pass some very basic tests. At some stage, an RSX11M image wil be made available.<br><br>
  Ian Schofield Mar 2023<br>
  <br>
- 
+
  Update Mar 2023<br>
  Bill Saltzstein has created a battery powered Pico_11/40 with a BLE interface. Do read the enclosed paper.
  Bruno Novak has built a version of RSX11 4.6 BL56 with a C compiler and a Y2K compliant version of TIME.
@@ -142,12 +150,12 @@ Update Jan 2023
  (Having said this, there is a sysgen option to use FIS if you wish).
  Further to the memory limit of the Pico, there is no point in going for 22 bit addressing. This option is being considered
  as part of a parallel build for the ESP32 with PSRAM (4Mb). This is WIP
- 
+
  In the meanwhile, have fun and try some apps that need an FPP.
 
  Ian Schofield September 2023.
- 
- 
- 
- 
- 
+
+
+
+
+
